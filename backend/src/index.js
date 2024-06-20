@@ -1,44 +1,36 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const bodyParser = require('body-parser');
+const userRouter = require('./routes/users');
+const clientRouter = require('./routes/clients');
+const errorHandler = require('./middleware/errorHandler');
 
-// Import routes
-const userRoutes = require('./routes/users');
-const auth = require('./middleware/auth'); // Import the auth middleware
-
-// Create an Express application
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
-// Middleware setup
-app.use(cors());
+// Middleware
 app.use(bodyParser.json());
 
-// MongoDB connection string
-const mongoURI = 'mongodb+srv://russelldelbridge2020:Blackgate123!@conversationalcrm.ugaupe6.mongodb.net/ConversationalCRM?retryWrites=true&w=majority&appName=ConversationalCRM';
-
-// Connect to MongoDB
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
-
-// Use routes
-app.use('/api/users', userRoutes);
-
-// Define a protected route
-app.get('/api/protected', auth, (req, res) => {
-  res.json({ msg: 'This is a protected route' });
+// Database connection
+mongoose.connect('mongodb://localhost:27017/conversationalcrm', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error.message);
 });
 
-// Define a basic route
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+// Routes
+app.use('/users', userRouter);
+app.use('/clients', clientRouter);
 
-// Start the server
+// Error handling middleware
+app.use(errorHandler);
+
+// Server start
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
-
-
