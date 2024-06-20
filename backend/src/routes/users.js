@@ -1,56 +1,39 @@
+// src/routes/users.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
-const JWT_SECRET = 'your_jwt_secret';
+const User = require('../models/User');
 
-// Register route
+// Register
 router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
-  try {
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).send('Email already exists');
+    try {
+        const user = new User(req.body);
+        await user.save();
+        const token = user.generateAuthToken();
+        res.status(201).send({ user, token });
+    } catch (err) {
+        res.status(400).send(err);
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user = new User({ name, email, password: hashedPassword });
-    await user.save();
-    res.status(201).send('User registered');
-  } catch (error) {
-    res.status(400).send('Error registering user');
-  }
 });
 
-// Login route
+// Login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    let user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).send('Invalid credentials');
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        const token = user.generateAuthToken();
+        res.send({ user, token });
+    } catch (err) {
+        res.status(400).send(err);
     }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).send('Invalid credentials');
-    }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ token });
-  } catch (error) {
-    res.status(400).send('Error logging in user');
-  }
 });
 
-// Protected route
-router.get('/protected', auth, (req, res) => {
-  res.json({ msg: 'This is a protected route' });
+// Get User Profile
+router.get('/profile', auth, async (req, res) => {
+    res.send(req.user);
 });
 
 module.exports = router;
 
-
-module.exports = router;
 
 
 

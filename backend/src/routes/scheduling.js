@@ -1,67 +1,67 @@
-// src/routes/clients.js
+// src/routes/scheduling.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const Client = require('../models/Client');
+const Schedule = require('../models/Schedule');
 
-// Create Client
+// Create Schedule
 router.post('/', auth, async (req, res) => {
     try {
-        const client = new Client({
+        const schedule = new Schedule({
             ...req.body,
             owner: req.user._id
         });
-        await client.save();
-        res.status(201).send(client);
+        await schedule.save();
+        res.status(201).send(schedule);
     } catch (err) {
         res.status(400).send(err);
     }
 });
 
-// Get All Clients
+// Get All Schedules
 router.get('/', auth, async (req, res) => {
     try {
-        const clients = await Client.find({ owner: req.user._id });
-        res.send(clients);
+        const schedules = await Schedule.find({ owner: req.user._id });
+        res.send(schedules);
     } catch (err) {
         res.status(500).send(err);
     }
 });
 
-// Get Client by ID
+// Get Schedule by ID
 router.get('/:id', auth, async (req, res) => {
     try {
-        const client = await Client.findOne({ _id: req.params.id, owner: req.user._id });
-        if (!client) {
+        const schedule = await Schedule.findOne({ _id: req.params.id, owner: req.user._id });
+        if (!schedule) {
             return res.status(404).send();
         }
-        res.send(client);
+        res.send(schedule);
     } catch (err) {
         res.status(500).send(err);
     }
 });
 
-// Update Client
+// Update Schedule
 router.put('/:id', auth, async (req, res) => {
     try {
-        const client = await Client.findOneAndUpdate({ _id: req.params.id, owner: req.user._id }, req.body, { new: true, runValidators: true });
-        if (!client) {
+        const schedule = await Schedule.findOneAndUpdate({ _id: req.params.id, owner: req.user._id }, req.body, { new: true, runValidators: true });
+        if (!schedule) {
             return res.status(404).send();
         }
-        res.send(client);
+        res.send(schedule);
     } catch (err) {
         res.status(400).send(err);
     }
 });
 
-// Delete Client
+// Delete Schedule
 router.delete('/:id', auth, async (req, res) => {
     try {
-        const client = await Client.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
-        if (!client) {
+        const schedule = await Schedule.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
+        if (!schedule) {
             return res.status(404).send();
         }
-        res.send(client);
+        res.send(schedule);
     } catch (err) {
         res.status(500).send(err);
     }
