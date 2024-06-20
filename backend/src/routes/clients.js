@@ -1,8 +1,7 @@
-// src/routes/clients.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const Client = require('../models/Client');
+const Client = require('../models/client');  // Corrected import statement
 
 // Create Client
 router.post('/', auth, async (req, res) => {

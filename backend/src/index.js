@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/users');
 const clientRouter = require('./routes/clients');
+const invoiceRouter = require('./routes/invoices'); // Import the invoices route
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -24,6 +25,7 @@ mongoose.connect('mongodb://localhost:27017/conversationalcrm', {
 // Routes
 app.use('/users', userRouter);
 app.use('/clients', clientRouter);
+app.use('/invoices', invoiceRouter); // Add the invoices route
 
 // Error handling middleware
 app.use(errorHandler);

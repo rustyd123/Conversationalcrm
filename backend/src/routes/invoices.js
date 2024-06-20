@@ -1,8 +1,7 @@
-// src/routes/invoices.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const Invoice = require('../models/Invoice');
+const Invoice = require('../models/invoice'); // Ensure the correct path to the model
 
 // Create Invoice
 router.post('/', auth, async (req, res) => {
@@ -44,7 +43,11 @@ router.get('/:id', auth, async (req, res) => {
 // Update Invoice
 router.put('/:id', auth, async (req, res) => {
     try {
-        const invoice = await Invoice.findOneAndUpdate({ _id: req.params.id, owner: req.user._id }, req.body, { new: true, runValidators: true });
+        const invoice = await Invoice.findOneAndUpdate(
+            { _id: req.params.id, owner: req.user._id },
+            req.body,
+            { new: true, runValidators: true }
+        );
         if (!invoice) {
             return res.status(404).send();
         }
