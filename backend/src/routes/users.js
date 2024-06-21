@@ -1,4 +1,3 @@
-// src/routes/users.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -7,11 +6,13 @@ const User = require('../models/User');
 // Register
 router.post('/register', async (req, res) => {
     try {
+        console.log('Request Body:', req.body); // Debugging line
         const user = new User(req.body);
         await user.save();
         const token = user.generateAuthToken();
         res.status(201).send({ user, token });
     } catch (err) {
+        console.error('Error:', err); // Debugging line
         res.status(400).send(err);
     }
 });
@@ -33,11 +34,3 @@ router.get('/profile', auth, async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-
-
-
-
-
